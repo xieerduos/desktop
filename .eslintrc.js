@@ -63,7 +63,7 @@ module.exports = {
         ],
         'no-irregular-whitespace': 'error',
         'template-curly-spacing': ['error', 'never'],
-        'max-len': ['error', 120],
+        'max-len': ['error', 140],
         'no-multiple-empty-lines': 'error',
         'eol-last': 'off',
         'lines-around-comment': [

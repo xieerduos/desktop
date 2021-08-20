@@ -1,8 +1,9 @@
 'use strict';
 
-import {app, protocol, BrowserWindow} from 'electron';
+import {app, ipcMain, protocol, BrowserWindow} from 'electron';
 import {createProtocol} from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, {VUEJS3_DEVTOOLS} from 'electron-devtools-installer';
+import path from 'path';
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 // Scheme must be registered before the app is ready
@@ -11,16 +12,21 @@ protocol.registerSchemesAsPrivileged([{scheme: 'app', privileges: {secure: true,
 async function createWindow() {
     // Create the browser window.
     const win = new BrowserWindow({
-        width: 800,
-        height: 600,
+        width: 800 / 2,
+        height: 600 / 2,
+        transparent: false,
+        frame: true,
         fullscreen: false,
         webPreferences: {
+            preload: path.join(__dirname, 'preload.js'),
             // Use pluginOptions.nodeIntegration, leave this alone
             // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
             nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
             contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
         }
     });
+    win.removeMenu();
+    // win.setIgnoreMouseEvents(false);
 
     if (process.env.WEBPACK_DEV_SERVER_URL) {
         // Load the url of the dev server if in development mode
@@ -61,6 +67,10 @@ app.on('ready', async () => {
         }
     }
     createWindow();
+    ipcMain.on('set-ignore-mouse-events', (event, ...args) => {
+        console.log('args :>> ', args);
+        // BrowserWindow.fromWebContents(event.sender).setIgnoreMouseEvents(...args);
+    });
 });
 
 // Exit cleanly on request from parent process in development mode.
